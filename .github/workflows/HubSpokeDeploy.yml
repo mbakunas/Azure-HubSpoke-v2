@@ -2,8 +2,8 @@ name: HubSpokeV2
 env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
   azureRegion: East US 2
-  templateFile: ./Azure-HubSpoke-v2/main.bicep
-  parametersFile: ./Azure-HubSpoke-v2/main.parameters.jsonc
+  templateFile: ./main.bicep
+  parametersFile: ./main.parameters.jsonc
 
 # Controls when the workflow will run
 on:
@@ -12,8 +12,8 @@ on:
     branches:
       - main
     paths:
-      - "Azure-HubSpoke-v2/**.bicep"
-      - "Azure-HubSpoke-v2/**.jsonc"
+      - "**.bicep"
+      - "**.jsonc"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
