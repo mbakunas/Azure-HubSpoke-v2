@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup_location": {
+            "value": "eastus"
+        },
+        "vnets": {
+            "value": [
+                {
+                    // hub VNet
+                    "resourceGroup": {
+                        "name": "HubSpoke01",
+                        "tags": {
+                            "environment": "sandbox"
+                        }
+                    },
+                    "name": "VNet-HUB-EastUS-01",
+                    "addressSpace": "10.0.0.0/22",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "GatewaySubnet",
+                            "addressSpace": "10.0.0.0/26"
+                        },
+                        {
+                            "name": "AzureBastionSubnet",
+                            "addressSpace": "10.0.0.128/26",
+                            "serviceBastion": {
+                                "name": "VNet-HUB-EastUS2-01-Bastion"
+                            }
+                        },
+                        {
+                            "name": "Infra-10.0.1.0_24",
+                            "addressSpace": "10.0.1.0/24",
+                            "nsgName": "Infra-10.0.1.0_24-NSG"
+                        }
+                    ]
+                },
+                {
+                    // spoke VNet
+                    "resourceGroup": {
+                        "name": "HubSpoke01",
+                        "tags": {
+                            "environment": "sandbox"
+                        }
+                    },
+                    "name": "VNet-SPOKE-EastUS-01",
+                    "addressSpace": "10.1.0.0/16",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "appGW-10.1.1.0_24",
+                            "addressSpace": "10.1.1.0/24",
+                            "nsgName": "appGW-10.1.1.0_24-NSG",
+                            "serviceAppGW": {
+                                "name": "TestAppGW01",
+                                "backendAddressPoolsName": "Foo"
+                            }
+                        },
+                        {
+                            "name": "App01-10.1.2.0_24",
+                            "addressSpace": "10.1.2.0/24",
+                            "nsgName": "App01-10.1.2.0_24-NSG"
+                        },
+                        {
+                            "name": "App02-10.1.3.0_24",
+                            "addressSpace": "10.1.3.0/24",
+                            "nsgName": "App02-10.1.3.0_24-NSG"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
