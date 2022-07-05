@@ -10,8 +10,8 @@ module appGW 'appGW.bicep' = [for subnet in vnet.subnets: if (contains(subnet, '
   name: 'appGW-${subnet.name}'
   scope: resourceGroup(vnet.resourceGroup.name)
   params: {
-    appGateway_name: subnet.appGWservice.name
-    appGateway_backendAddressPools_Name: subnet.appGWservice.backendAddressPoolsName
+    appGateway_name: subnet.serviceAppGW.name
+    appGateway_backendAddressPools_Name: subnet.serviceAppGW.backendAddressPoolsName
     appGateway_VNet_Name: vnet.name
     appGateway_location: location
     appGateway_Subnet_Name: subnet.name
