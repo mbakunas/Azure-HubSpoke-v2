@@ -41,7 +41,7 @@ module deployVNets 'Modules/VNet.bicep' = [for (vnet, i) in vnets: {
 @description('NSG Rules')
 module nsgs 'Modules/NSGrules.bicep' = [for (vnet, i) in vnets: {
   scope: resourceGroup(vnet.resourceGroup.name)
-  name: '${deployment().name}-NSGs-for-VNet${i}'
+  name: '${deployment().name}-NsgRules-for-VNet${i}'
   dependsOn: deployVNets
   params: {
     nsg_Subnets: vnet.subnets
@@ -79,4 +79,13 @@ module spoke2HubPeer 'Modules/VNetPeer.bicep' = [for i in range(1, length(vnets)
 
 // -----------------------------------------------------------------------------------------------------
 // network services
+module services 'Modules/services.bicep' = [for (vnet, i) in vnets: {
+  scope: resourceGroup(vnet.resourceGroup.name)
+  name: '${deployment().name}-NetSvcs${i}'
+  dependsOn: deployVNets
+  params: {
+    vnet: vnet
+    location: vnet.location
+  }
+}]
 
