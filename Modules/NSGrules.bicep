@@ -4,7 +4,7 @@ param nsg_Subnets array
 
 
 // rules for application gateway
-resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
+resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'serviceAppGW')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/AppGW_Allow_65200-65535' : 'appGWnsgRule1/appGWnsgRule1${i}'  
   properties: {
     protocol: 'Tcp'
@@ -18,7 +18,7 @@ resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@20
   }
 }]
 
-resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
+resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'serviceAppGW')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/Allow_http_https_from_Internet' : 'appGWnsgRule2/appGWnsgRule2${i}' 
   properties: {
     protocol: 'Tcp'
