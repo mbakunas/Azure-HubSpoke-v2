@@ -1,57 +1,48 @@
 targetScope = 'resourceGroup'
 
-// VNet
-param vnet_Name string
-param vnet_AddressSpace string
-param vnet_Location string
+param vnetName string
+param vnetLocation string
+param vnetAddressPrefix string
+param vnetDnsServers array
+param vnetEncryption bool
+param vnetSubnets array 
+param vnetTags object
 
-// Subnets
-param vnet_subnets array
-/*
-Format the parameters array like this:
-  {
-    "name": "AzureBastionSubnet"
-    "addressSpace": '10.0.0.128/26',
-    "serviceBastion": {
-        "name": "VNet-HUB-EastUS2-01-Bastion"
-    }
-  }
-  {
-    name: 'CorpNet'
-    addressSpace: '10.0.1.0/24'
-  }
-]
-*/
-
-// create any NSGs
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = [for (subnet, i) in vnet_subnets: if (contains(subnet, 'nsgName')) {
-  name: contains(subnet, 'nsgName') ? subnet.nsgName : 'networkSecurityGroup${i}'
-  location: vnet_Location
-  tags: resourceGroup().tags
-  properties: {
-    securityRules: []
-  }
-}]
-
-// create the VNet
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
-  name: vnet_Name
-  location: vnet_Location
-  tags: resourceGroup().tags
+resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
+  name: vnetName
+  location: vnetLocation
+  tags: vnetTags
   properties: {
     addressSpace: {
       addressPrefixes: [
-        vnet_AddressSpace
+        vnetAddressPrefix
       ]
     }
-    subnets: [for (subnet, i) in vnet_subnets: {
-      name: subnet.name
-      properties: {
-        addressPrefix: subnet.addressSpace
-        networkSecurityGroup: !(contains(subnet, 'nsgName')) ? null : {
-          id: networkSecurityGroup[i].id
+    dhcpOptions: !empty(vnetDnsServers)
+    ? {
+      dnsServers: vnetDnsServers
+    }
+    : null
+    encryption: vnetEncryption == true
+    ? {
+      enabled: false
+    }
+    : null
+    subnets: [
+      for subnet in vnetSubnets: {
+        name: subnet.name
+        properties: {
+          addressPrefix: subnet.addressPrefix
+          routeTable: (contains(subnet, 'routeTable')
+            ? {
+                id: resourceId('Microsoft.Network/routeTables', subnet.routeTable)
+              }
+            : null)
         }
       }
-    }]
+    ]
   }
 }
+
+output id string = vnet.id
+output subnets array = [for subnet in vnetSubnets: { id: '${vnet.id}/subnets/${subnet.name}' }]
