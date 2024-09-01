@@ -8,7 +8,7 @@
 *.xlsm
 
 # except for the parameters builder
-!ParametersFileBuilder.xlsm
+!Hub-Spoke Parameters Builder V2.xlsm
 
 
 # User-specific files
